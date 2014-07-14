@@ -1,0 +1,321 @@
+% # IDPSurvival package for R (http://www.R-project.org)
+% # Copyright (C) 2014 Francesca Mangili, Alessio Benavoli, Marco Zaffalon, 
+% #                    Cassio de Campos.
+% #
+% #    This program is free software: you can redistribute it and/or modify
+% #    it under the terms of the GNU General Public License as published by
+% #    the Free Software Foundation, either version 3 of the License, or
+% #    (at your option) any later version.
+% #
+% #    This program is distributed in the hope that it will be useful,
+% #    but WITHOUT ANY WARRANTY; without even the implied warranty of
+% #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% #    GNU General Public License for more details.
+% #
+% #    You should have received a copy of the GNU General Public License
+% #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[nogin,letterpaper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{caption,subfig}
+\usepackage{bm}
+\usepackage{verbatim}
+
+
+%Package
+%\usepackage{amsmath}
+\usepackage{amsfonts,amssymb}
+%\usepackage{mathrsfs}
+\usepackage{theorem}
+% \usepackage{subcaption}
+% \usepackage{subfigure}
+%\usepackage{graphicx,url}
+%\usepackage{float}
+%\usepackage{enumerate}
+%\interdisplaylinepenalty=2500
+
+%New symbols
+%\def\Rset{{\mathbb R}}
+%\def\Zset{{\mathbb Z}}
+%\def\Nset{{\mathbb N}}
+%\def\Eset{{\textnormal{E}}}
+%\def\Pset{{\mathbb P}}
+\def\Iset{{\mathbb I}}
+%\def\Mu{{\mathcal M}}
+%\def\Cclasse{{\mathscr C}}
+%\def\Pr{{\textnormal{Pr}}}
+
+%\def\contint{{\displaystyle \subset\hspace{-0,4cm}\int}}
+%\def\intprod{{\mathop{\textnormal{{\huge $\pi$}}}}}
+%\def\d{{\textnormal{d}}}
+%\newcommand{\somasalto}[3]{\sum\limits_{\stackrel{#1: \textnormal{ jump of } #2}{#3}}}
+%\newcommand{\Cint}[2]{\displaystyle \subset\hspace{-0,4cm}\int\limits_{#1}^{#2}}
+%\newcommand{\intprodeq}[2]{\mathop{\intprod}\limits_{#1}^{#2}}
+
+%Theorem
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Definition}{Definition}
+\newtheorem{Lemma}{Lemma}
+\newtheorem{Property}{Property}
+{\theorembodyfont{\rmfamily} \newtheorem{Example}{Example}}
+
+% \VignetteIndexEntry{IDPSurvival}
+
+%opening
+\title{R Package: IDPSurvival}
+
+\author{Francesca Mangili \and Alessio Benavoli \and Marco Zaffalon \and Cassio de Campos}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\begin{abstract}
+  The purpose of this text is to provide a simple explanation about the main features of
+  \verb=IDPSurvival= package for \verb=R= language. In short, we give some
+  examples on how to use the package.
+\end{abstract}
+
+%\begin{keywords}
+{\it Keywords:} IDPSurvival, R package, Imprecise Dirichlet Process, survival curves estimator, 
+survival curves comparison, sum-rank test.
+%\end{keywords}
+
+\section{Introduction}
+\label{intro}
+
+We assume the reader to be familiar with reliability and/or survival estimation based on the 
+Imprecise Dirichlet Process (IDP). 
+For details we suggest the technical paper:
+{\it Imprecise Dirichlet Process for the estimate and comparison of survival functions with censored data},
+Mangili et al. 2014. 
+
+The problem targeted here can be defined by \verb=time=, an array of times of failure
+(survival) or components (patients) and \verb=status= the event indicator, that
+is, \verb=status= equals to one if an event happened at that time, or zero in
+case of right-censoring. Furthermore, covariates can be present in the data set,
+which can be used to distinguish different group of data. 
+
+Two main functions are included in the IDPSurvival package:
+\begin{itemize}
+\item \verb=isurvfit=: compute the IDP estimator of the survival function 
+for one or more groups of right censored data. 
+\item \verb=isurvdiff=: test the difference between the survival curves of two groups of right censored data.
+\end{itemize}
+
+To derive prosterior inferences about the distribution of the survival function $S(t)$ the IDP model uses a set $\mathcal{T}$ of Dirichlet process (DP) priors obtained by fixing the prior strenght $s$ of the DPs in the set and letting their base measure vary in the set of all distributions. For each prior in $\mathcal{T}$ the method computes the posterior distribution conditioning on the set of right censored data. Posterior inferences are summarized by their upper and lower bounds. For example, when computing the posterior expectation of $S(t)$ in correspondence of each DP prior in $\mathcal{T}$, we obtain an infinite number of different values for $E[S(t)]$. We retain the $\inf$ and $\sup$ of this set of values as lower and upper bounds for the expectation of $S(t)$. 
+
+This document aims to give a simple explanation about the main features of the \verb=isurvfit= 
+\verb=isurvdiff= functions. We refer to the man pages/help and the technical
+paper for all details about the arguments of these functions. 
+
+Before continuing, in case
+you have not yet done so, the first thing to do before using the functions is to
+install and load the library.
+
+<<idpsinst,eval=FALSE>>=
+install.packages("IDPSurvival_VERSION.tar.gz",
+                 repos=NULL,type="source") ## from local file
+install.packages("IDPSurvival")  ## or from CRAN
+@ 
+<<<idps>>=
+library("IDPSurvival")
+@
+
+\section{Survival Curve Estimator}
+
+First, we exemplify the use of the methods without covariates.
+
+\begin{Example}
+\label{ex1}
+In this example we simulate a data set with right-censored survival times. The
+problem regards an experiment with 30 individuals. For simplicity, we define the 
+survival and censoring times by random variables with the exponential distribution.
+
+<<echo=FALSE>>=
+options(width=60)
+@
+<<example>>=
+n <- 30
+lambda <- 5
+X <- rexp(n, rate = lambda) # sample lifetimes
+Y <- rexp(n, rate = lambda) # sample censoring times
+status <- (X<Y)*1 
+time <- X*status+Y*(1-status) 
+dataset <- cbind(time,status)
+dataset
+@
+\end{Example}
+
+The function isurvfit can be use to compute and plot the survival curve for the data generated in example \ref{ex1} based on the IDP model.
+In order to perform the estimation, following the common practice with other
+survival analysis packages, the user has to build a formula with time
+and censoring indication, which is then used to call the estimation
+method itself:
+
+<<isurvfit>>=
+formula <- Surv(dataset[,1],dataset[,2]) ~ 1
+fit <- isurvfit(formula, s=0.5, 
+                conf.int=0.95,display=FALSE)
+fit
+@
+
+The formula can be also defined using the variable names and specifying the data frame in which to interpret them. 
+
+<<isurvfit2>>=
+dataset <- data.frame(time,status)
+formula <- Surv(time,status) ~ 1
+fit <- isurvfit(formula,dataset,s=0.5,display=FALSE)
+@
+
+The upper and lower bounds of $E[S(t)]$ are stored in \verb=fit$survUP= and \verb=fit$survLOW=; the upper and lower bounds of the 0.95 confidence interval for $S(t)$ are stored in \verb=fit$upper= and \verb=fit$lower=.
+The value of $s$ defines the strength of the DP prior: larger values of $s$ increase the robustness but also the imprecision (i.e., the gap between the upper and lower bound of $E[S(t)]$).  
+
+Here, we compare the IDP with the non-parametric Kaplan-Meier estimator.
+The result is presented in the Figure \ref{figidps}.
+
+<<label=mlekm,fig=TRUE,height=5,width=5,include=FALSE>>=
+plot(fit)
+# Kaplan-Meier estimation
+library(survival)
+km <- survfit(formula,dataset)
+lines(km,col='red')
+legend('bottomleft',c("IDP","Kaplan-Meier"),lty=c(1,1),
+       col=c('black','red'),pch=c('o','.'))
+@
+
+\begin{figure}[ht!]
+\centering
+\captionsetup{justification=centering}
+\includegraphics[scale=0.8,keepaspectratio=true]{IDPSurvival-mlekm}
+\caption{IDP estimator of the survival curve.}
+\label{figidps}
+\end{figure}
+
+In the following, we present a simple example on how to define different groups 
+to be used with \verb=IDPSurvival=. 
+In fact, we use the same framework of formulas as other survival packages.
+
+<<label=2cov,fig=TRUE,height=5,width=5,include=FALSE>>=
+# Running isurvfit on lung (from survival package) with 
+# two groups: Male and Female
+data(lung,package='survival')
+formula <- Surv(time,status) ~ sex
+fit <- isurvfit(formula, lung)
+legend('topright',c("Male","Female"),
+       lty=c(1,1),col=c(1,2),pch=c(1,2))
+<<label=3cov,fig=TRUE,height=5,width=5,include=FALSE>>=
+# three groups: ph.ecog = 0, 1, 2
+formula <- Surv(time,status) ~ ph.ecog
+sel =!is.na(match(lung$ph.ecog,c(0,1,2)))
+fit <- isurvfit(formula, lung, subset=sel)
+legend('topright',names(fit$strata), 
+       lty=rep(1,3),col=c(1:3),
+       pch=c(1:3),title='ECOG performance score')
+@
+
+The curves are shown in figure \ref{figcov}.
+
+\begin{figure}[ht!]
+\centering
+\captionsetup{justification=centering}
+\subfloat{\includegraphics[scale=0.5,keepaspectratio=true]{IDPSurvival-2cov}
+\label{fig_1a}}
+\subfloat{\includegraphics[scale=0.5,keepaspectratio=true]{IDPSurvival-3cov}
+\label{fig_1b}}
+\caption{IDP survival curves on lung dataset.}
+\label{figcov}
+\end{figure}
+
+
+\section{Curves comparison}
+We consider the survival time $X$ and $Y$ for two groups of individuals.
+Given samples with right censred data for $X$ and $Y$,
+the survival curves of the two groups can be compared using the 
+generalized IDP sum rank test implemented by the \verb=isurvdiff= function.
+The IDP test evaluates posterior upper and lower bounds for the 
+distributions of $P(X<Y)$. 
+It can be one-sided (\verb+alternative="greater"/"less"+) or 
+two-sided (\verb+alternative="two.sided"+).
+
+Consider first the one-sided test with \verb=alternative="greater"=
+
+<<label=test,fig=TRUE,height=5,width=5,include=FALSE>>=
+# Tests for the lung cancer dataset if male are  
+# more likely to live less than females
+formula <- Surv(time,status) ~ sex
+test <- isurvdiff(formula, lung, 
+                  alternative='greater',
+                  nsamples=100000)
+print(test)
+@
+
+By default the function takes as samples for $X$ and $Y$ the data with covariate 
+(at right hand side of \verb=~=) equal to, respectively, 1 and 2 (in the \verb=lung= 
+dataset 1 corresponds to male and 2 to female). Diferent covariate values for the
+indentification of the groups can be defined using the argument $group$. An example is given 
+in the discussion of the two-sided case. 
+The argument \verb=nsamples= determines how many  Monte Carlo samples are generated to approximate the posterior distributions of $P(X<Y)$.
+
+The test evaluates the posterior upper and lower bounds for the 
+probability that $P(X<Y)>1/2$ and compares them with the desired value 
+specified by the parameter \verb=level= (by default equal to $0.95$). 
+In the contex of decision making, said K1 and K2 the costs of 
+type I and type II errors, one can minimize the expected loss
+by choosing \verb+level+=K1/(K1+K2).
+If the lower pobability of $P(X<Y)>1/2$ is larger than 0.95 we can 
+state that \textit{Y is better than X} with probability larger than 0.95 and
+thus accept the hypothesis. The test returns \verb+H=1+. If the upper 
+probability is lower than 0.95 we can say that the the probability 
+that \textit{Y is better than X} is smaller than the desired level; 
+the hypothesis is not accepted and test returns \verb+H=0+. 
+If 0.95 falls between the lowr and upper probabilities, then the decision
+that minimizes the expected loss depend on the choice of the prior and thus
+a robut decision cannot be made; the test returns \verb+H=2+.
+
+The test also provides the plot (figure \ref{figtest}) of the posterior upper and lower 
+distributions of $P(X<Y)$.
+
+\begin{figure}[ht!]
+\centering
+\captionsetup{justification=centering}
+\includegraphics[scale=0.8,keepaspectratio=true]{IDPSurvival-test}
+\caption{IDP posterior distribution of $P(X<Y)$.}
+\label{figtest}
+\end{figure}
+
+The two-sided test only tells if the lifetimes for the two groups 
+are significantly different, i.e., $P(X<Y)\neq P(Y<X)$, without 
+focusing on a single direction.
+In the next example, we test if the lifetimes $X$ and $Y$ of 
+patients in the \verb=lung= dataset with ECOG performance score \verb+ph.ecog=0+
+and \verb+ph.ecog=1+ are diferent.
+<<label=test2>>=
+# Tests for the lung cancer dataset if male are more likely 
+# to live less than females
+formula <- Surv(time,status) ~ ph.ecog
+test <- isurvdiff(formula, lung, groups=c(0,1),
+                  alternative='two.sided', 
+                  level =0.95, exact=FALSE)
+test
+@
+The argument $exact$ determines whether computing the exact posterior distribution of $P(X<Y)$ by Monte Carlo sampling (\verb=TRUE=), or using the Gaussian approximation (\verb=FALSE=). Clearly, the latter choice is computationally faster but also less accurate if the samples size is small.
+
+The IDP test considers the upper and lower Highest Posterior Density (HPD) 
+credible intervals at the specified level (\verb+level=0.95+) and verifies 
+if they include the value of 1/2 which corresponds to the null hypothesis 
+$P(X<Y)=P(Y<X)$. In the example, the 0.95 credible intervals do not contain 1/2; thus,  
+with probability 0.95 either \textit{X is better than Y} or \textit{Y is better than X} and the test returns \verb+H=1+ (in practice, since both intervals lay on the right of 1/2, we can infer that the credible hypothesis is \textit{Y is better than X}). More precisely, the IDP test returns \verb+H=1+ if
+1/2 is not included between the left bound of the lower and the right bound of the upper HPD credible intervals; it returns, instead, \verb=H\=0= if 1/2 is included in both credible intervals, and \verb+H=2+ otherwise.
+
+
+\section{Remarks}
+
+This ``manual'' describes the basics of the IDPSurvival packag. 
+We invite the user to the functions' help pages (available with the package) 
+and to the technical paper mentioned in the
+beginning of this document for further details.
+
+\end{document}

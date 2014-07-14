@@ -1,0 +1,8 @@
+importFrom(Rsolnp,solnp)
+importFrom(survival,is.Surv,strata)
+importFrom(gtools,rdirichlet)
+export(isurvdiff,isurvfit,isurvdiff.smax)
+S3method(print,isurvdiff)
+S3method(print,isurvfit)
+S3method(plot,isurvfit)
+S3method("[",isurvfit)
