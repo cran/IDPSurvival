@@ -1,6 +1,12 @@
 importFrom(Rsolnp,solnp)
 importFrom(survival,is.Surv,strata)
 importFrom(gtools,rdirichlet)
+importFrom("grDevices", "rgb")
+importFrom("graphics", "axis", "box", "grid", "legend", "lines", "par",
+           "plot", "polygon", "text")
+importFrom("stats", "density", "model.extract", "qnorm", "rnorm",
+           "terms", "var")
+importFrom("utils", "type.convert")
 export(isurvdiff,isurvfit,isurvdiff.smax)
 S3method(print,isurvdiff)
 S3method(print,isurvfit)
