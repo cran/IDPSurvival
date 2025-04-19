@@ -19,7 +19,7 @@ chemotherapy increased the length of the remission.  The data here formed a
 preliminary analysis which was conducted in October 1974.
 }
 \usage{
-aml
+data(aml)
 }
 \format{
 This data frame contains the following columns:

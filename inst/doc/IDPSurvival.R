@@ -1,5 +1,4 @@
 ### R code from vignette source 'IDPSurvival.Rnw'
-### Encoding: UTF-8
 
 ###################################################
 ### code chunk number 1: idpsinst (eval = FALSE)
@@ -68,7 +67,6 @@ legend('bottomleft',c("IDP","Kaplan-Meier"),lty=c(1,1),
 ###################################################
 # Running isurvfit on lung (from survival package) with 
 # two groups: Male and Female
-data(lung,package='survival')
 formula <- Surv(time,status) ~ sex
 fit <- isurvfit(formula, lung)
 legend('topright',c("Male","Female"),

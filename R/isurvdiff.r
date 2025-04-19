@@ -389,13 +389,13 @@ isurvdiff <- function(formula, data, groups=c(1,2), s=0.25,
     if (alternative=="greater")
     {    ## plot the Lowers and set up most of the plot parameters
       plot(densLower, xlim = xlim, ylim = ylim, xlab = 'P(X<Y)', ylab='Probability', main='IDP rank-sum test',
-           panel.first = grid(),col=LowInt, axes=FALSE)
+           panel.first = {grid()},col=LowInt, axes=FALSE)
       xlabel  <- seq(0, 1, by = 0.1)
       axis(1, at = xlabel, las = 1)
       axis(2)
       box()
       lines(densUpper, xlim = xlim, ylim = ylim, xlab = 'P(X<Y)', ylab='Probability', main='IDP rank-sum test',
-            panel.first = grid(),col=UpInt)
+            panel.first = {grid()},col=UpInt)
       #put our density plots in
       dens<- densLower
       polygon(c(0.5, dens$x[dens$x>.5 & dens$x <= 1], xlim[2]), c(0, dens$y[dens$x>=.5 & dens$x <= 1], 0),density = -1, col = LowerCol)
@@ -416,13 +416,13 @@ isurvdiff <- function(formula, data, groups=c(1,2), s=0.25,
     if (alternative=="less")
     {    ## plot the Lowers and set up most of the plot parameters
       plot(densLower, xlim = xlim, ylim = ylim, xlab = 'P(X<Y)', ylab='Probability', main='IDP rank-sum test',
-           panel.first = grid(),col=LowInt, axes=FALSE)
+           panel.first = {grid()},col=LowInt, axes=FALSE)
       xlabel  <- seq(0, 1, by = 0.1)
       axis(1, at = xlabel, las = 1)
       axis(2)
       box()
       lines(densUpper, xlim = xlim, ylim = ylim, xlab = 'P(X<Y)', ylab='Probability', main='IDP rank-sum test',
-            panel.first = grid(),col=UpInt)
+            panel.first = {grid()},col=UpInt)
       #put our density plots in
       dens<- densLower
       polygon(c(xlim[1], dens$x[dens$x>.0 & dens$x <= 0.5], 0.5), c(0, dens$y[dens$x>=.0 & dens$x <= 0.5], 0),density = -1, col = LowerCol)
@@ -443,13 +443,13 @@ isurvdiff <- function(formula, data, groups=c(1,2), s=0.25,
     if (alternative=="two.sided")
     {    ## plot the Lowers and set up most of the plot parameters
       plot(densLower, xlim = xlim, ylim = ylim, xlab = 'P(X<Y)', ylab='Probability', main='IDP rank-sum test',
-           panel.first = grid(),col=LowInt, axes=FALSE)
+           panel.first = {grid()},col=LowInt, axes=FALSE)
       xlabel  <- seq(0, 1, by = 0.1)
       axis(1, at = xlabel, las = 1)
       axis(2)
       box()
       lines(densUpper, xlim = xlim, ylim = ylim, xlab = 'P(X<Y)', ylab='Probability', main='IDP rank-sum test',
-            panel.first = grid(),col=UpInt)
+            panel.first = {grid()},col=UpInt)
       #put our density plots in
       dens<- densLower
       polygon(c(xll, dens$x[dens$x>xll & dens$x <= xlr], xlr), c(0, dens$y[dens$x>=xll & dens$x <= xlr], 0),density = -1, col = LowerCol)

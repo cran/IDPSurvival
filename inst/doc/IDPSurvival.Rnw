@@ -201,7 +201,6 @@ In fact, we use the same framework of formulas as other survival packages.
 <<label=2cov,fig=TRUE,height=5,width=5,include=FALSE>>=
 # Running isurvfit on lung (from survival package) with 
 # two groups: Male and Female
-data(lung,package='survival')
 formula <- Surv(time,status) ~ sex
 fit <- isurvfit(formula, lung)
 legend('topright',c("Male","Female"),

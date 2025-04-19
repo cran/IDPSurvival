@@ -127,17 +127,16 @@ This function implements the IDP sum-rank test describe in Mangili and others (2
 }
 
 \section{References}{
-Benavoli, A., Mangili, F., Zaffalon, M. and Ruggeri, F. (2014). Imprecise Dirichlet process with application to the hypothesis test on the probability that X < Y.  \emph{ArXiv e-prints}, \url{http://adsabs.harvard.edu/abs/2014arXiv1402.2755B}. 
+Benavoli, A., Mangili, F., Zaffalon, M. and Ruggeri, F. (2014). Imprecise Dirichlet process with application to the hypothesis test on the probability that X < Y.  \emph{ArXiv e-prints}, \url{https://ui.adsabs.harvard.edu/abs/2014arXiv1402.2755B/abstract}. 
 
 Mangili, F., Benavoli, A., Zaffalon, M. and de Campos, C. (2014). Imprecise Dirichlet Process for the estimate and comparison of survival functions with censored data. 
 }
 
 \seealso{
-\code{\link{Surv}}.  
+\code{\link[survival]{Surv}}.  
 }
 
 \examples{
-data(lung,package='survival')
 test <-isurvdiff(Surv(time,status)~sex,lung,groups=c(1,2), 
 	 			 alternative = 'two.sided',s=0.5, nsamples=1000)
 print(test)

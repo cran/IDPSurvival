@@ -73,7 +73,7 @@ by Benavoli and others (2014).
 }
 
 \section{References}{
-Benavoli, A., Mangili, F., Zaffalon, M. and Ruggeri, F. (2014). Imprecise Dirichlet process with application to the hypothesis test on the probability that X < Y.  \emph{ArXiv e-prints}, \url{http://adsabs.harvard.edu/abs/2014arXiv1402.2755B}.
+Benavoli, A., Mangili, F., Zaffalon, M. and Ruggeri, F. (2014). Imprecise Dirichlet process with application to the hypothesis test on the probability that X < Y.  \emph{ArXiv e-prints}, \url{https://ui.adsabs.harvard.edu/abs/2014arXiv1402.2755B/abstract}.
 
 Mangili, F., Benavoli, A., Zaffalon, M. and de Campos, C. (2014). Imprecise Dirichlet Process for the estimate and comparison of survival functions with censored data. 
 
@@ -82,7 +82,7 @@ Mangili, F., Benavoli, A., Zaffalon, M. and de Campos, C. (2014). Imprecise Diri
 \seealso{
 \code{\link{isurvfit.object}},
 \code{\link{plot.isurvfit}}, 
-\code{\link{Surv}}.  
+\code{\link[survival]{Surv}}.  
 }
 
 \examples{
